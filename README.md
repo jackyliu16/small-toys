@@ -19,7 +19,7 @@ download and run happy.exe
 
 #### change other
 
-{music}: You need to change turtle.speed(0.51) in the code      [https://www.geeksforgeeks.org/turtle-speed-function-in-python/]
+{speed of drawing}: You need to change turtle.speed(0.51) in the code      [https://www.geeksforgeeks.org/turtle-speed-function-in-python/]
 
 
 
