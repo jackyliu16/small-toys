@@ -9,13 +9,23 @@ some simple things for playing
 a simple music player and turtle drawing of happy birthday
 **This repository provides a wrapper for a program[https://pythondex.com/python-program-to-wish-happy-birthday-with-code]**
 
+![effect](https://s2.loli.net/2022/05/18/OKczTYmHoiwdbrG.png)
+
 ### Play turtorial
 
 download and run happy.exe
 
 ### Custom tutorial
 
-#### way 1: 
+#### change other
+
+{music}: You need to change turtle.speed(0.51) in the code      [https://www.geeksforgeeks.org/turtle-speed-function-in-python/]
+
+
+
+#### change music and mark
+
+##### way 1: 
 1. clone warehouse
 2. adding your custom music to /res
 3. A quick change to the music related part of the code
@@ -24,7 +34,7 @@ download and run happy.exe
 6. change `happy.spec' line 11 -> datas=[('res', 'res')],
 7. `pyinstaller happy.spec`
 
-#### way 2:
+##### way 2:
 only do step 1, 2, 7 in way 1
 
 ### Appendix
