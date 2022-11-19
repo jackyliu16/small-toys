@@ -1,5 +1,3 @@
-package Tool;
-
 public enum LogLevel {
     OFF,
     Error,

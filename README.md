@@ -22,3 +22,5 @@ a simple music player and turtle drawing of happy birthday
 ## JAVA_Logger
 
 > A implement of a simple console colored log output, which has a kind of similar to rust's log
+
+![a image about it's output](./JAVA_Logger/Example.png)

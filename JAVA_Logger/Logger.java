@@ -1,4 +1,3 @@
-package Tool;
 /*
  * @File:   Logger.java
  * @Desc:
