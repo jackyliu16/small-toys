@@ -3,119 +3,22 @@
  * @Desc:
  * @Author: jacky
  * @Repo:   https://github.com/jackyliu16
- * @Date:   2022/11/19 下午4:49
+ * @Date:   2022/11/24 下午12:11
  * @Version:0.0
+ * @reference:
+ *      the design of log level: https://github.com/LearningOS/rust-based-os-comp2022/blob/main/os2-ref/src/logging.rs
+ *      singleton:  https://www.cnblogs.com/cielosun/p/6582333.html
+ *                  https://www.jianshu.com/p/d35f244f3770
+ *                  https://www.cnblogs.com/makefile/p/enum-singleton.html
  */
 
-// Reference from Rust Log
-//enum LogLevel {
-//    OFF,
-//    Error,
-//    Warn,
-//    Info,
-//    Debug,
-//    Trace,
-//}
-public class Logger {
-    static LogLevel loglevel = null;
+public enum Logger {
+    INSTANCE;
 
-    public Logger() {
-        loglevel = LogLevel.Info;
-    }
+    LogLevel logLevel = LogLevel.Info;
 
-    public Logger(LogLevel logLevel) {
-        loglevel = logLevel;
-    }
-
-    private static int level_into_num(LogLevel logLevel) {
-        if (logLevel == LogLevel.OFF) {
-            return 0;
-        } else if (logLevel == LogLevel.Error) {
-            return 1;
-        } else if (logLevel == LogLevel.Warn) {
-            return 2;
-        } else if (logLevel == LogLevel.Info) {
-            return 3;
-        } else if (logLevel == LogLevel.Debug) {
-            return 4;
-        } else if (logLevel == LogLevel.Trace) {
-            return 5;
-        } else {
-            return 0;
-        }
-    }
-
-    private static String level_into_string(LogLevel logLevel) {
-        if (logLevel == LogLevel.OFF) {
-            return "OFF  ";
-        } else if (logLevel == LogLevel.Error) {
-            return "ERROR";
-        } else if (logLevel == LogLevel.Warn) {
-            return "WARN ";
-        } else if (logLevel == LogLevel.Info) {
-            return "INFO ";
-        } else if (logLevel == LogLevel.Debug) {
-            return "DEBUG";
-        } else if (logLevel == LogLevel.Trace) {
-            return "TRACE";
-        } else {
-            return "NONE  ";
-        }
-    }
-
-    private static void printColoredString(LogLevel logLevel, String content) {
-        if (logLevel != LogLevel.OFF) {
-            int num = 30;
-
-            if (logLevel == LogLevel.Error) {
-                num = 31;
-            } else if (logLevel == LogLevel.Warn) {
-                num = 33;
-            } else if (logLevel == LogLevel.Info) {
-                num = 34;
-            } else if (logLevel == LogLevel.Debug) {
-                num = 32;
-            } else if (logLevel == LogLevel.Trace) {
-                num = 36;
-            }
-            System.out.println(String.format("\033[%d;1m%s\033[0m", num, content));
-        }
-    }
-
-    /*
-     *
-     * 30 black
-     * 31 red
-     * 32 green
-     * 33 yellow
-     * 34 blue
-     * 35 pinkish red
-     * 36 cyan
-     * 37 white
-     */
-    private static void log(LogLevel logLevel, String message) {
-        if (level_into_num(logLevel) != 0) {
-            if (level_into_num(logLevel) <= level_into_num(loglevel)) {
-                Thread currenThread = Thread.currentThread();
-                StackTraceElement stackTrace = currenThread.getStackTrace()[2];
-                String output = String.format("[%s][%s](%s:%s): %s",
-                        level_into_string(logLevel),
-                        Thread.currentThread().getName(),
-                        stackTrace.getFileName(),
-                        stackTrace.getLineNumber(),
-                        message);
-                printColoredString(logLevel, output);
-            }
-        }
-    }
-
-    /**
-     * 设置当前日志级别，日志级别较高的情况下会忽略较低级别的日志打印
-     * 
-     * Error> Warn> Info> Debug> Trace
-     */
-    public void setLevel(LogLevel logLevel) {
-        loglevel = logLevel;
+    public void setLogLevel(LogLevel logLevel) {
+        this.logLevel = logLevel;
     }
 
     public void error(String message) {
@@ -138,13 +41,80 @@ public class Logger {
         log(LogLevel.Trace, message);
     }
 
-    public static void main(String[] args) {
-        Logger log = new Logger();
-        log.setLevel(LogLevel.Trace);
-        log.error("error message");
-        log.warn("warn message");
-        log.info("info message");
-        log.debug("debug message");
-        log.trace("trace message");
+    /**
+     * A stupid way to convert log level into number
+     *
+     * @param logLevel Logger Level
+     * @return error: 0, from error to trace from 1 to 5
+     */
+    private int levelIntoNum(LogLevel logLevel) {
+        if (logLevel == LogLevel.OFF) {
+            return 0;
+        } else if (logLevel == LogLevel.Error) {
+            return 1;
+        } else if (logLevel == LogLevel.Warn) {
+            return 2;
+        } else if (logLevel == LogLevel.Info) {
+            return 3;
+        } else if (logLevel == LogLevel.Debug) {
+            return 4;
+        } else if (logLevel == LogLevel.Trace) {
+            return 5;
+        } else {
+            return 0;
+        }
     }
+
+    private String levelIntoString(LogLevel logLevel) {
+        if (logLevel == LogLevel.OFF) {
+            return "OFF  ";
+        } else if (logLevel == LogLevel.Error) {
+            return "ERROR";
+        } else if (logLevel == LogLevel.Warn) {
+            return "WARN ";
+        } else if (logLevel == LogLevel.Info) {
+            return "INFO ";
+        } else if (logLevel == LogLevel.Debug) {
+            return "DEBUG";
+        } else if (logLevel == LogLevel.Trace) {
+            return "TRACE";
+        } else {
+            return "NONE ";
+        }
+    }
+
+    private void printColoredString(LogLevel out_level, String message) {
+        if (out_level != LogLevel.OFF) {
+            int num = 30;
+            if (out_level == LogLevel.Error) {
+                num = 31;
+            } else if (out_level == LogLevel.Warn) {
+                num = 33;
+            } else if (out_level == LogLevel.Info) {
+                num = 34;
+            } else if (out_level == LogLevel.Debug) {
+                num = 32;
+            } else if (out_level == LogLevel.Trace) {
+                num = 36;
+            }
+            System.out.printf("\u001B[%d;1m%s\u001B[0m%n", num, message);
+        }
+    }
+
+    private void log(LogLevel out_level, String message) {
+        if (levelIntoNum(out_level) != 0) {
+            if (levelIntoNum(out_level) <= levelIntoNum(this.logLevel)) {
+                Thread currentThread = Thread.currentThread();
+                StackTraceElement stackTrace = currentThread.getStackTrace()[4];
+                String output = String.format("[%s][%s](%s:%s): %s",
+                        levelIntoString(out_level),
+                        currentThread.getName(),
+                        stackTrace.getFileName(),
+                        stackTrace.getLineNumber(),
+                        message);
+                printColoredString(out_level, output);
+            }
+        }
+    }
+
 }
